@@ -12,9 +12,9 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     if(self = [super initWithFrame:frame]) {
         self.font = [UIFont systemFontOfSize:16];
-        self.textColor = [UIColor whiteColor];
+        self.textColor = [UIColor blueColor];
         self.textAlignment = NSTextAlignmentCenter;
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = [UIColor yellowColor];
         self.userInteractionEnabled = YES;
     }
     return self;
@@ -22,6 +22,7 @@
 
 - (void)setScale:(CGFloat)scale {
     _scale = scale;
+    self.textColor = [UIColor blueColor];
     CGFloat transformScale = 1 + scale * 0.3;
     self.transform = CGAffineTransformMakeScale(transformScale, transformScale);
 }
