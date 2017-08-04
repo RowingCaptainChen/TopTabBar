@@ -17,6 +17,7 @@ static NSString *ID = @"social";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor yellowColor];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:ID];
 }
 

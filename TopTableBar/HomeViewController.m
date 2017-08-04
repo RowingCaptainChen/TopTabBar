@@ -10,7 +10,7 @@
 #import "TopTitleLabel.h"
 #import "ContentViewController.h"
 
-@interface HomeViewController ()
+@interface HomeViewController ()<UIScrollViewDelegate>
 /**顶部标题 */
 @property (nonatomic,strong) UIScrollView *titleScrollView;
 /**底部内容 */
@@ -29,14 +29,19 @@
     _titleScrollView = [[UIScrollView alloc] init];
     _titleScrollView.frame = CGRectMake(0, 64, ScreenWidth, 35);
     _titleScrollView.backgroundColor = [UIColor redColor];
+    _titleScrollView.delegate = self;
     [self.view addSubview:self.titleScrollView];
     _contentScrollView = [[UIScrollView alloc] init];
     _contentScrollView.frame = CGRectMake(0, 99, ScreenWidth, ScreenHeight - 99);
     _contentScrollView.backgroundColor = [UIColor blueColor];
+    _contentScrollView.delegate = self;
     [self.view addSubview:self.contentScrollView];
     
     [self setupContentView];
     [self setupTopLabel];
+    
+    [self scrollViewDidEndScrollingAnimation:self.contentScrollView];
+    
 }
 
 - (void)setupContentView {
@@ -76,7 +81,6 @@
     for(NSInteger i = 0;i < 7;i++) {
         TopTitleLabel *label = [[TopTitleLabel alloc] init];
         label.text = [self.childViewControllers[i] title];
-        NSLog(@"---%@",label.text);
         CGFloat labelX = i * labelW;
         label.frame = CGRectMake(labelX, labelY, labelW, labelH);
         [label addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickLabel:)]];
@@ -98,6 +102,58 @@
     offset.x = index * self.contentScrollView.frame.size.width;
     [self.contentScrollView setContentOffset:offset animated:YES];
 }
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    
+    CGFloat width = scrollView.frame.size.width;
+    CGFloat height = scrollView.frame.size.height;
+    CGFloat offsetX = scrollView.contentOffset.x;
+    
+    NSInteger index = offsetX / width;
+    
+    TopTitleLabel *label = self.titleScrollView.subviews[index];
+    CGPoint titleOffset = self.titleScrollView.contentOffset;
+    titleOffset.x = label.center.x - width * 0.5;
+    
+    if(titleOffset.x < 0) titleOffset.x = 0;
+    CGFloat maxTitleOffsetX = self.titleScrollView.contentSize.width - width;
+    if(titleOffset.x > maxTitleOffsetX) titleOffset.x = maxTitleOffsetX;
+    
+    [self.titleScrollView setContentOffset:titleOffset animated:YES];
+    
+//    for(TopTitleLabel *otherLabel in self.titleScrollView.subviews) {
+//        if(otherLabel != label) otherLabel.scale = 0.0;
+//    }
+    
+    UIViewController *willShowVc = self.childViewControllers[index];
+    
+    if([willShowVc isViewLoaded]) return;
+    
+    willShowVc.view.frame = CGRectMake(offsetX, 0, width, height);
+    [scrollView addSubview:willShowVc.view];
+    
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self scrollViewDidEndScrollingAnimation:scrollView];
+}
+
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//    CGFloat scale = scrollView.contentOffset.x / scrollView.frame.size.height;
+//    if(scale < 0 || scale > self.titleScrollView.subviews.count - 1) return;
+//    
+//    NSInteger leftIndex = scale;
+//    TopTitleLabel *leftLabel = self.titleScrollView.subviews[leftIndex];
+//    
+//    NSInteger rightIndex = leftIndex + 1;
+//    TopTitleLabel *rightLabel = (rightIndex == self.titleScrollView.subviews.count) ? nil : self.titleScrollView.subviews[rightIndex];
+//    
+//    CGFloat rightScale = scale - leftIndex;
+//    CGFloat leftScale = 1 - rightScale;
+//    
+//    leftLabel.scale = leftScale;
+//    rightLabel.scale = rightScale;
+//}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     

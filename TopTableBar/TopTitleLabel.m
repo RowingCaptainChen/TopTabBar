@@ -9,12 +9,14 @@
 #import "TopTitleLabel.h"
 
 @implementation TopTitleLabel
+
 - (instancetype)initWithFrame:(CGRect)frame {
+    
     if(self = [super initWithFrame:frame]) {
         self.font = [UIFont systemFontOfSize:16];
         self.textColor = [UIColor blueColor];
         self.textAlignment = NSTextAlignmentCenter;
-        self.backgroundColor = [UIColor yellowColor];
+        self.backgroundColor = [UIColor clearColor];
         self.userInteractionEnabled = YES;
     }
     return self;
@@ -22,7 +24,7 @@
 
 - (void)setScale:(CGFloat)scale {
     _scale = scale;
-    self.textColor = [UIColor blueColor];
+    self.textColor = [UIColor yellowColor];
     CGFloat transformScale = 1 + scale * 0.3;
     self.transform = CGAffineTransformMakeScale(transformScale, transformScale);
 }
